@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StatsForce - Advanced Codeforces Analytics</title>
+    <link rel="stylesheet" href="/style.css">
+    <script src="script.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <link rel="icon" type="image/svg+xml" href="assests/StatsForce_Favicon.svg">
+</head>
+
+<body>
+    <div class="stars-bg"></div>
+    
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-chart-line"></i>
+                <span class = "stats-name">CF Metrics</span>
+            </div>
+            <div class="nav-menu">
+                <a href="#home" class="nav-link">Home</a>
+                <a href="#analyze" class="nav-link">Analyze</a>
+                <a href="#compare" class="nav-link target-cmp">Compare</a>
+                <a href="#about" class="nav-link">About</a>
+            </div>
+        </div>
+    </nav>
+
+    <section id="home" class="hero">
+        <div class="hero-content">
+            <h1 class="hero-title">
+                <span class="gradient-text">Advanced Codeforces</span>
+                <span class="hero-subtitle">Analytics Platform</span>
+            </h1>
+            <p class="hero-description">
+                Unlock deep insights into your competitive programming journey with comprehensive 
+                visualizations, detailed analytics, and performance comparisons.
+            </p>
+            <div class="hero-features">
+                <div class="feature-tag">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Real-time Analytics</span>
+                </div>
+                <div class="feature-tag">
+                    <i class="fas fa-users"></i>
+                    <span>User Comparison</span>
+                </div>
+                <div class="feature-tag">
+                    <i class="fas fa-trophy"></i>
+                    <span>Contest Tracking</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="analyze" class="main-section">
+        <div class="container">
+            
+            <div class="input-card">
+                <h2 class="section-title">
+                    <i class="fas fa-search"></i>
+                    Analyze Profile
+                </h2>
+                <div class="input-wrapper">
+                    <div class="input-group">
+                        <input type="text" id="handleInput" placeholder="Enter Codeforces Handle" class="handle-input">
+                        <button id="searchBtn" class="btn btn-primary">
+                            <i class="fas fa-analytics"></i>
+                            Analyze
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="loadingIndicator" class="loading-card" style="display: none;">
+                <div class="loading-content">
+                    <div class="loading-spinner"></div>
+                    <h3>Fetching Data</h3>
+                    <p>Analyzing profile from Codeforces API...</p>
+                    <div class="loading-progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="errorMessage" class="error-card" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span class="error-text"></span>
+            </div>
+
+            <div id="profileSection" class="profile-card" style="display: none;">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <div class="avatar-placeholder">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="profile-info">
+                        <h2 id="userName" class="profile-name"></h2>
+                        <div class="profile-badges">
+                            <span id="userRank" class="badge rank-badge"></span>
+                            <span id="userRating" class="badge rating-badge"></span>
+                        </div>
+                        <div class="profile-stats">
+                            <div class="stat-item">
+                                <span class="stat-label">Max Rating</span>
+                                <span id="maxRating" class="stat-value"></span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Contribution</span>
+                                <span id="contribution" class="stat-value"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="quickStats" class="stats-grid" style="display: none;">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="totalSolved">0</div>
+                        <div class="stat-label">Problems Solved</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="contestsAttended">0</div>
+                        <div class="stat-label">Contests</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-medal"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="bestRank">-</div>
+                        <div class="stat-label">Best Rank</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-number" id="avgRating">-</div>
+                        <div class="stat-label">Avg Rating</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="chartsSection" class="charts-container" style="display: none;">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-line-chart"></i> Rating Timeline</h3>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="ratingChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-row">
+                    <div class="chart-card chart-half">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-layer-group"></i> Problem Levels</h3>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="levelsChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="chart-card chart-half">
+                        <div class="chart-header">
+                            <h3><i class="fas fa-star"></i> Problem Ratings</h3>
+                        </div>
+                        <div class="chart-wrapper">
+                            <canvas id="ratingsChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3><i class="fas fa-tags"></i> Problem Tags Distribution</h3>
+                        <div class="chart-controls">
+                            <select id="tagsLimit" class="select-input">
+                                <option value="10">Top 10</option>
+                                <option value="15">Top 15</option>
+                                <option value="20">Top 20</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="chart-wrapper">
+                        <canvas id="tagsChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div id="contestSection" class="contest-card" style="display: none;">
+                <div class="contest-header">
+                    <h3><i class="fas fa-history"></i> Contest History</h3>
+                    <div class="contest-filters">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="div1">Div. 1</button>
+                        <button class="filter-btn" data-filter="div2">Div. 2</button>
+                        <button class="filter-btn" data-filter="div3">Div. 3</button>
+                        <button class="filter-btn" data-filter="educational">Educational</button>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table id="contestTable" class="contest-table">
+                        <thead>
+                            <tr>
+                                <th>Contest</th>
+                                <th>Rank</th>
+                                <th>Rating Δ</th>
+                                <th>New Rating</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="contestTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="compare" class="compare-section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">
+                    <i class="fas fa-balance-scale"></i>
+                    User Comparison
+                </h2>
+                <p class="section-subtitle">Compare performance between two users</p>
+            </div>
+
+            <div class="compare-input-card">
+                <div class="compare-inputs">
+                    <div class="input-group">
+                        <label>First User</label>
+                        <input type="text" id="user1Handle" placeholder="Enter first handle" class="handle-input">
+                    </div>
+                    <div class="vs-divider">
+                        <span>VS</span>
+                    </div>
+                    <div class="input-group">
+                        <label>Second User</label>
+                        <input type="text" id="user2Handle" placeholder="Enter second handle" class="handle-input">
+                    </div>
+                </div>
+                <button id="compareBtn" class="btn btn-primary btn-wide">
+                    <i class="fas fa-compare"></i>
+                    Compare Users
+                </button>
+            </div>
+
+            <div id="comparisonResults" class="comparison-results" style="display: none;">
+                <div class="comparison-cards">
+                    <div class="user-card" id="user1Card">
+                        <div class="user-header">
+                            <h3 id="user1Name"></h3>
+                            <span id="user1Rank" class="badge rank-badge"></span>
+                        </div>
+                        <div class="user-stats">
+                            <div class="user-stat">
+                                <span class="stat-label">Current Rating</span>
+                                <span id="user1Rating" class="stat-value"></span>
+                            </div>
+                            <div class="user-stat">
+                                <span class="stat-label">Max Rating</span>
+                                <span id="user1MaxRating" class="stat-value"></span>
+                            </div>
+                            <div class="user-stat">
+                                <span class="stat-label">Problems Solved</span>
+                                <span id="user1Solved" class="stat-value"></span>
+                            </div>
+                            <div class="user-stat">
+                                <span class="stat-label">Contests</span>
+                                <span id="user1Contests" class="stat-value"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="user-card" id="user2Card">
+                        <div class="user-header">
+                            <h3 id="user2Name"></h3>
+                            <span id="user2Rank" class="badge rank-badge"></span>
+                        </div>
+                        <div class="user-stats">
+                            <div class="user-stat">
+                                <span class="stat-label">Current Rating</span>
+                                <span id="user2Rating" class="stat-value"></span>
+                            </div>
+                            <div class="user-stat">
+                                <span class="stat-label">Max Rating</span>
+                                <span id="user2MaxRating" class="stat-value"></span>
+                            </div>
+                            <div class="user-stat">
+                                <span class="stat-label">Problems Solved</span>
+                                <span id="user2Solved" class="stat-value"></span>
+                            </div>
+                            <div class="user-stat">
+                                <span class="stat-label">Contests</span>
+                                <span id="user2Contests" class="stat-value"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="common-stats">
+                    <h3><i class="fas fa-intersection"></i> Common Achievements</h3>
+                    <div class="common-grid">
+                        <div class="common-item">
+                            <span class="common-label">Common Problems Solved</span>
+                            <span id="commonProblems" class="common-value">0</span>
+                        </div>
+                        <div class="common-item">
+                            <span class="common-label">Common Contests</span>
+                            <span id="commonContests" class="common-value">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="about" class="about-section">
+        <div class="container">
+            <div class="about-content">
+                <h2 class="section-title">About CF Metrics</h2>
+                <p class="about-description">
+                    CF Metrics is a comprehensive Codeforces analytics platform designed to provide 
+                    deep insights into competitive programming performance. Built with modern web 
+                    technologies and powered by the Codeforces API.
+                </p>
+                <div class="features-grid">
+                    <div class="feature-item">
+                        <i class="fas fa-chart-bar"></i>
+                        <h3>Advanced Analytics</h3>
+                        <p>Detailed visualizations of rating trends, problem distributions, and performance metrics.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-users"></i>
+                        <h3>User Comparison</h3>
+                        <p>Compare profiles side-by-side with comprehensive statistics and visual comparisons.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-trophy"></i>
+                        <h3>Contest Tracking</h3>
+                        <p>Complete contest history with filtering, sorting, and performance analysis.</p>
+                    </div>
+                    <div class="feature-item">
+                        <i class="fas fa-tags"></i>
+                        <h3>Problem Analysis</h3>
+                        <p>Deep dive into problem tags, difficulty levels, and solving patterns.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>CF Metrics</h3>
+                    <p>Advanced Codeforces Analytics Platform</p>
+                </div>
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Resources</h4>
+                        <a href="https://codeforces.com/api/help" target="_blank">Codeforces API</a>
+                        <a href="https://codeforces.com" target="_blank">Codeforces</a>
+                    </div>
+                    <div class="link-group">
+                        <h4>Contact</h4>
+                        <a href="mailto:aditya09313@gmail.com">Email Support</a>
+                        <a href="#about">About</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <div class="copyright">
+                    <p>&copy; 2025 CF Metrics. All rights reserved.</p>
+                    <p>Developed by <strong>Adarsh Pandey</strong> | <a href="mailto:adarshpandey5397@gmail.com">adarshpandey5397@gmail.com</a></p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
